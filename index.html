@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LAVANDA AUDIT :: cyberpunk realtime</title>
+
+<script src="https://s3.tradingview.com/tv.js"></script>
+
+<style>
+:root{
+  --neon:#d946ef;
+  --neon2:#22d3ee;
+  --bg:#050508;
+  --panel:rgba(10,10,20,.75);
+  --text:#e5e7eb;
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family: system-ui, monospace;
+  background:
+    radial-gradient(circle at top,rgba(217,70,239,.15),transparent 40%),
+    url("bg.gif") center/cover no-repeat fixed,
+    var(--bg);
+  color:var(--text);
+}
+
+.container{
+  max-width:1200px;
+  margin:auto;
+  padding:20px;
+  display:grid;
+  grid-template-columns: 1fr;
+  gap:20px;
+}
+
+@media(min-width:900px){
+  .container{
+    grid-template-columns: 420px 1fr;
+  }
+}
+
+.panel{
+  background:var(--panel);
+  border:1px solid rgba(217,70,239,.25);
+  border-radius:14px;
+  padding:18px;
+  box-shadow:0 0 30px rgba(217,70,239,.15);
+}
+
+h1{
+  margin:0 0 10px;
+  font-size:14px;
+  letter-spacing:.15em;
+  color:var(--neon);
+}
+
+.timer{
+  font-size:56px;
+  color:var(--neon2);
+}
+
+.small{
+  font-size:13px;
+  opacity:.85;
+}
+
+.row{margin-top:8px}
+
+.green{color:#22c55e}
+.red{color:#ef4444}
+
+/* fear greed */
+.bar{
+  height:22px;
+  background:#111;
+  border-radius:11px;
+  overflow:hidden;
+  margin-top:10px;
+}
+.bar > div{
+  height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:12px;
+  color:#fff;
+}
+
+/* chart */
+#tv{
+  width:100%;
+  height:420px;
+}
+
+/* audio */
+audio{
+  width:100%;
+  margin-top:10px;
+  filter: hue-rotate(270deg);
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <!-- LEFT PANEL -->
+  <div class="panel">
+
+    <h1>LAVANDA AUDIT</h1>
+
+    <div id="datetime" class="small"></div>
+
+    <div class="row small">ВИ НІХУЯ НЕ РОБИТЕ:</div>
+    <div id="timer" class="timer">00:00:00.0</div>
+
+    <div id="sessions" class="row small"></div>
+
+    <div class="row" id="change1h"></div>
+    <div class="row" id="change24h"></div>
+    <div class="row" id="change7d"></div>
+
+    <div class="bar">
+      <div id="fg">loading...</div>
+    </div>
+
+    <div id="volume" class="row small"></div>
+
+    <div class="row small" id="rates"></div>
+
+    <audio controls autoplay loop>
+      <source src="https://ice6.somafm.com/dronezone-128-mp3">
+    </audio>
+
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="panel">
+    <div id="tv"></div>
+  </div>
+
+</div>
+
+<script>
+/* DATE TIME */
+function dt(){
+ let d=new Date(new Date().toLocaleString("en-US",{timeZone:"Europe/Kyiv"}));
+ document.getElementById("datetime").textContent=
+ d.toLocaleTimeString()+" · "+d.toLocaleDateString();
+}
+setInterval(dt,1000); dt();
+
+/* TIMER */
+let start=Date.now();
+function timer(){
+ let e=Date.now()-start;
+ let h=String(Math.floor(e/3600000)).padStart(2,'0');
+ let m=String(Math.floor(e/60000)%60).padStart(2,'0');
+ let s=String(Math.floor(e/1000)%60).padStart(2,'0');
+ let ms=Math.floor((e%1000)/100);
+ document.getElementById("timer").textContent=`${h}:${m}:${s}.${ms}`;
+ setTimeout(timer,100);
+}
+timer();
+
+/* SESSIONS */
+function sessions(){
+ let h=new Date().getHours(),s=[];
+ if(h>=2&&h<11)s.push("Азія 02–11");
+ if(h>=8&&h<17)s.push("Європа 08–17");
+ if(h>=15)s.push("Америка 15–00");
+ document.getElementById("sessions").textContent=s.join(" · ");
+}
+sessions();
+
+/* BTC DATA */
+fetch("https://api.coinlore.net/api/ticker/?id=90")
+.then(r=>r.json()).then(d=>{
+ let b=d[0];
+ let c=(v)=>v>=0?'green':'red';
+ document.getElementById("change1h").innerHTML=
+ `1h BTC: <span class="${c(b.percent_change_1h)}">${b.percent_change_1h}%</span>`;
+ document.getElementById("change24h").innerHTML=
+ `24h BTC: <span class="${c(b.percent_change_24h)}">${b.percent_change_24h}%</span>`;
+ document.getElementById("change7d").innerHTML=
+ `7d BTC: <span class="${c(b.percent_change_7d)}">${b.percent_change_7d}%</span>`;
+ document.getElementById("volume").textContent=
+ `24h Volume: ${(b.volume24/1e9).toFixed(2)} B$`;
+});
+
+/* RATES */
+async function rate(c){
+ let r=await fetch(`https://api.coinbase.com/v2/exchange-rates?currency=${c}`);
+ let d=await r.json();
+ return `1 ${c} = ${(+d.data.rates.UAH).toFixed(2)} UAH`;
+}
+(async()=>{
+ let out=[];
+ for(let c of ["USD","EUR","GBP","CNY"]) out.push(await rate(c));
+ document.getElementById("rates").innerHTML=out.join("<br>");
+})();
+
+/* FEAR GREED */
+fetch("https://api.alternative.me/fng/?limit=1")
+.then(r=>r.json()).then(d=>{
+ let v=+d.data[0].value;
+ let f=document.getElementById("fg");
+ f.style.width=v+"%";
+ f.style.background=v<25?"#ef4444":v<50?"#f97316":v<75?"#a855f7":"#22c55e";
+ f.textContent=`${v} · ${d.data[0].value_classification}`;
+});
+
+/* TRADINGVIEW */
+new TradingView.widget({
+ container_id:"tv",
+ symbol:"BITSTAMP:BTCUSD",
+ interval:"D",
+ theme:"dark",
+ width:"100%",
+ height:"100%",
+ locale:"en"
+});
+</script>
+
+</body>
+</html>
