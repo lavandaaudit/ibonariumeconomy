@@ -1,0 +1,72 @@
+:root {
+  /* Colors - Reference Analysis */
+  --bg-color: #00050a; /* Deep Dark Blue/Black */
+  --primary-accent: #4DD2FF; /* Neon Cyan */
+  --secondary-text: #9FE7FF; /* Light Cyan */
+  --status-ok: #64FF64; /* Neon Green */
+  --status-err: #ff003c; /* Red for alerts */
+  
+  /* Fonts */
+  --font-main: "Courier New", Courier, monospace;
+  
+  /* Effects */
+  --glow-cyan: 0 0 10px rgba(77, 210, 255, 0.4);
+  --glow-green: 0 0 8px rgba(100, 255, 100, 0.4);
+  --border-thin: 1px solid var(--primary-accent);
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--secondary-text);
+  font-family: var(--font-main);
+  margin: 0;
+  padding: 0;
+  overflow: hidden; /* App-like feel */
+}
+
+/* Utilities */
+.neon-text {
+  color: var(--primary-accent);
+  text-shadow: 0 0 5px rgba(77, 210, 255, 0.5);
+}
+
+.neon-border {
+  border: var(--border-thin);
+  box-shadow: var(--glow-cyan);
+}
+
+.status-live {
+  color: var(--status-ok);
+  text-shadow: 0 0 5px rgba(100, 255, 100, 0.5);
+}
+
+/* Animations */
+@keyframes flicker {
+  0% { opacity: 1; }
+  95% { opacity: 1; }
+  96% { opacity: 0.8; }
+  98% { opacity: 1; }
+  99% { opacity: 0.9; }
+  100% { opacity: 1; }
+}
+
+.crt-effect {
+  position: fixed;
+  top: 0; 
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
+  background-size: 100% 4px;
+  z-index: 999;
+  opacity: 0.2;
+}
+
+/* Header Styles matches reference */
+h1, h2, h3 {
+  color: var(--primary-accent);
+  text-transform: uppercase;
+  font-weight: normal; 
+  margin: 0;
+}
