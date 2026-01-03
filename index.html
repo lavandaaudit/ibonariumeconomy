@@ -1,295 +1,118 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IBONARIUM :: ГЕО-ЕКОНОМІЧНИЙ OSINT</title>
-
-<script src="https://s3.tradingview.com/tv.js"></script>
-
-<style>
-:root{
-  --bg:#050508;
-  --panel:rgba(10,10,20,.78);
-  --neon:#d946ef;
-  --cyan:#22d3ee;
-  --green:#22c55e;
-  --orange:#f59e0b;
-  --red:#ef4444;
-  --text:#e5e7eb;
-}
-
-*{box-sizing:border-box}
-
-body{
-  margin:0;
-  font-family:system-ui,monospace;
-  background:
-    radial-gradient(circle at top,rgba(217,70,239,.22),transparent 45%),
-    url("bg.gif") center/cover no-repeat fixed,
-    var(--bg);
-  color:var(--text);
-}
-
-.container{
-  max-width:1500px;
-  margin:auto;
-  padding:16px;
-  display:grid;
-  grid-template-columns:1fr;
-  gap:16px;
-}
-
-@media(min-width:1200px){
-  .container{grid-template-columns:520px 1fr}
-}
-
-.panel{
-  background:var(--panel);
-  border:1px solid rgba(217,70,239,.25);
-  border-radius:18px;
-  padding:16px;
-  box-shadow:0 0 40px rgba(217,70,239,.18);
-}
-
-h1{
-  font-size:13px;
-  letter-spacing:.2em;
-  color:var(--neon);
-  margin:0 0 8px;
-}
-
-h2{
-  font-size:11px;
-  letter-spacing:.18em;
-  color:var(--cyan);
-  margin:14px 0 6px;
-}
-
-.small{font-size:12px;opacity:.85}
-.row{margin-top:4px;font-size:12px}
-
-.green{color:var(--green)}
-.red{color:var(--red)}
-.orange{color:var(--orange)}
-
-.bar{
-  height:20px;
-  background:#111;
-  border-radius:10px;
-  overflow:hidden;
-  margin-top:6px;
-}
-
-.bar div{
-  height:100%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:11px;
-  color:#fff;
-}
-
-.timer{
-  font-size:42px;
-  color:var(--cyan);
-}
-
-select{
-  width:100%;
-  background:#111;
-  color:#fff;
-  border:1px solid #333;
-  padding:8px;
-  border-radius:10px;
-  margin-bottom:10px;
-}
-
-#tv{width:100%;height:220px}
-
-.grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:6px;
-}
-
-audio{width:100%;margin-top:12px}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IBONARIUM :: ECONOMY OSINT</title>
+    <link rel="stylesheet" href="styles/cyberpunk.css">
+    <link rel="stylesheet" href="styles/main.css">
 </head>
-
 <body>
-<div class="container">
-
-<!-- ================= ЛІВА ПАНЕЛЬ — ПОВНІСТЮ ВІДНОВЛЕНА ================= -->
-<div class="panel" id="mainPanel">
-
-<h1>IBONARIUM :: ГЕО-ЕКОНОМІЧНИЙ OSINT</h1>
-
-<div id="datetime" class="small"></div>
-<div id="sessions" class="small"></div>
-
-<div class="row small">ТАЙМЕР СПОСТЕРЕЖЕННЯ:</div>
-<div id="timer" class="timer">00:00:00.0</div>
-
-<h2>ЯДРО РИЗИКУ</h2>
-<div id="btc24h" class="row"></div>
-<div id="fg" class="row"></div>
-<div class="row">VIX (страх): <span class="orange">підвищений</span></div>
-<div class="row">DXY (долар): <span class="red">тиск</span></div>
-
-<h2>ЛІКВІДНІСТЬ / ГРОШІ</h2>
-<div class="row">US10Y (облігації): <span class="orange">високі</span></div>
-<div class="row">Крива дохідності: <span class="red">інверсія</span></div>
-<div class="row">M2 (грошова маса): <span class="orange">скорочення</span></div>
-
-<h2>ФІНАНСОВІ РИНКИ</h2>
-<div class="row">S&P 500: <span class="green">risk-on</span></div>
-<div class="row">NASDAQ: <span class="green">сильний</span></div>
-<div class="row">Russell 2000: <span class="orange">слабкий</span></div>
-
-<h2>СИРОВИНА / ІНФЛЯЦІЯ</h2>
-<div class="row">Золото: <span class="orange">захист</span></div>
-<div class="row">Нафта (WTI): <span class="red">інфляційний тиск</span></div>
-<div class="row">Мідь: <span class="orange">сповільнення</span></div>
-
-<h2>СТАН КРИПТОРИНКУ</h2>
-<div class="row">Загальна капіталізація: <span class="green">зростає</span></div>
-<div class="row">Домінування BTC: <span class="orange">високе</span></div>
-<div class="row">ETH / BTC: <span class="green">ротація</span></div>
-
-<h2>МАКРО / ОЧІКУВАННЯ</h2>
-<div class="row">Інфляційні очікування (5р): <span class="orange">стійкі</span></div>
-<div class="row">ФРС (наступне): <span class="orange">утримання</span></div>
-<div class="row">Глобальний PMI: <span class="red">скорочення</span></div>
-<div class="row">Геоекономічний стрес: <span class="red">високий</span></div>
-
-<h2>МЕТАЛИ</h2>
-<div class="row">Золото (XAU): <span class="orange">тиха гавань</span></div>
-<div class="row">Срібло (XAG): <span class="green">інфляційний сигнал</span></div>
-<div class="row">Платина (XPT): <span class="orange">промисловість</span></div>
-<div class="row">Паладій (XPD): <span class="red">слабкість</span></div>
-
-<h2>РЕГІОНИ</h2>
-<div class="row">США: <span class="green">risk-on</span></div>
-<div class="row">Європа: <span class="orange">промисковий тиск</span></div>
-<div class="row">Китай: <span class="red">слабкий попит</span></div>
-<div class="row">Японія: <span class="green">carry trade ON</span></div>
-<div class="row">Індія: <span class="green">зростання</span></div>
-<div class="row">Латинська Америка: <span class="orange">сировинний цикл</span></div>
-<div class="row">РФ: <span class="red">тиск</span></div>
-
-<h2>ФАЗА СИСТЕМИ</h2>
-<div class="bar"><div>IBO · НАПРУГА</div></div>
-<div class="bar"><div>BELL · СПОСТЕРЕЖЕННЯ</div></div>
-
-<audio controls autoplay loop>
-<source src="https://ice6.somafm.com/classical-128-mp3">
-</audio>
-
-</div>
-
-<!-- ================= ПРАВА ПАНЕЛЬ — REALTIME ================= -->
-<div class="panel">
-
-<h2>UA FINANCE · ГРИВНЯ</h2>
-<div id="uah" class="row"></div>
-
-<h2>ГРАФІК</h2>
-<select id="assetSelect">
-<option value="BITSTAMP:BTCUSD">BTC / USD</option>
-<option value="BITSTAMP:ETHUSD">ETH / USD</option>
-<option value="OANDA:XAUUSD">Золото</option>
-<option value="SP:SPX">S&P 500</option>
-<option value="CBOE:VIX">VIX</option>
-</select>
-<div id="tv"></div>
-
-<h2>CRYPTO · COINBASE (REALTIME)</h2>
-<div id="crypto" class="grid"></div>
-
-</div>
-</div>
-
-<script>
-// ===== TIME =====
-function dt(){
- const d=new Date(new Date().toLocaleString("en-US",{timeZone:"Europe/Kyiv"}));
- datetime.textContent=d.toLocaleTimeString()+" · "+d.toLocaleDateString();
-}
-setInterval(dt,1000);dt();
-
-// ===== SESSIONS =====
-(function(){
- let h=new Date().getHours(),s=[];
- if(h>=2&&h<11)s.push("Азія");
- if(h>=8&&h<17)s.push("Європа");
- if(h>=15)s.push("США");
- sessions.textContent=s.join(" · ");
-})();
-
-// ===== TIMER =====
-let start=Date.now();
-(function t(){
- let e=Date.now()-start;
- timer.textContent=
- `${String(Math.floor(e/3600000)).padStart(2,'0')}:`+
- `${String(Math.floor(e/60000)%60).padStart(2,'0')}:`+
- `${String(Math.floor(e/1000)%60).padStart(2,'0')}.`+
- Math.floor((e%1000)/100);
- setTimeout(t,100);
-})();
-
-// ===== BTC 24H =====
-fetch("https://api.coinlore.net/api/ticker/?id=90")
-.then(r=>r.json()).then(d=>{
- let b=d[0];
- btc24h.innerHTML=`BTC (24г): <span class="${b.percent_change_24h>=0?'green':'red'}">${b.percent_change_24h}%</span>`;
-});
-
-// ===== FEAR GREED =====
-fetch("https://api.alternative.me/fng/?limit=1")
-.then(r=>r.json()).then(d=>{
- let v=d.data[0];
- fg.innerHTML=`Індекс страху: <span class="${v.value>60?'green':v.value<40?'red':'orange'}">${v.value}</span>`;
-});
-
-// ===== UA + COINBASE =====
-Promise.all([
- fetch("https://api.exchangerate.host/latest?base=UAH").then(r=>r.json()),
- fetch("https://api.coinbase.com/v2/prices/BTC-USD/spot").then(r=>r.json()),
- fetch("https://api.coinbase.com/v2/prices/ETH-USD/spot").then(r=>r.json())
-]).then(([fx,btc,eth])=>{
- uah.innerHTML=
- `1 BTC = ${(btc.data.amount/fx.rates.USD).toFixed(0)} грн<br>
-  1 ETH = ${(eth.data.amount/fx.rates.USD).toFixed(0)} грн<br>
-  USD ${(1/fx.rates.USD).toFixed(2)} · EUR ${(1/fx.rates.EUR).toFixed(2)} · GBP ${(1/fx.rates.GBP).toFixed(2)} · JPY ${(1/fx.rates.JPY).toFixed(2)}`;
-});
-
-// ===== TOP 10 COINBASE =====
-["BTC","ETH","SOL","BNB","XRP","ADA","DOGE","AVAX","DOT","LTC"].forEach(c=>{
- fetch(`https://api.coinbase.com/v2/prices/${c}-USD/spot`)
- .then(r=>r.json()).then(d=>{
-  crypto.innerHTML+=`<div>${c}</div><div>$${(+d.data.amount).toFixed(2)}</div>`;
- });
-});
-
-// ===== TRADINGVIEW =====
-let widget;
-function loadTV(sym){
- if(widget) widget.remove();
- widget=new TradingView.widget({
-  container_id:"tv",
-  symbol:sym,
-  interval:"D",
-  theme:"dark",
-  width:"100%",
-  height:"100%",
-  locale:"uk"
- });
-}
-loadTV("BITSTAMP:BTCUSD");
-assetSelect.onchange=e=>loadTV(e.target.value);
-</script>
-
+    <div class="crt-effect"></div>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="top-bar">
+            <div style="display:flex; align-items:center; gap:20px;">
+                <h1 class="brand neon-text">IBONARIUM <span style="font-size:0.6em; opacity:0.7">// ECONOMY OSINT</span>
+                </h1>
+                <!-- IGI Index Display -->
+                <div id="igi-container"
+                    style="border-left:1px solid #333; padding-left:20px; display:flex; align-items:center; gap:10px;">
+                    <span style="font-size:12px; opacity:0.8;">IBONARIUM INDEX:</span>
+                    <span id="igi-value" class="neon-text" style="font-size:1.2em; font-weight:bold;">--</span>
+                    <div style="width:100px; height:6px; background:#111; border:1px solid #444;">
+                        <div id="igi-bar"
+                            style="width:0%; height:100%; background:var(--primary-accent); transition:width 1s;"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="status-panel">
+                <span id="session-indicator"
+                    style="font-size:12px; color:orange; margin-right:15px; border:1px solid orange; padding:2px 5px;">SESSION:
+                    --</span>
+                <span style="font-size: 12px; margin-right: 15px;">СИСТЕМА: <span
+                        class="status-live">ONLINE</span></span>
+                <span id="clock" style="font-family: monospace;">00:00:00</span>
+            </div>
+        </header>
+        <!-- Left Analytic Panel -->
+        <aside class="left-panel">
+            <!-- 1. FIAT (Moved to Top) -->
+            <div class="panel-section">
+                <h3 class="section-title">ВАЛЮТНІ КУРСИ</h3>
+                <div id="fiat-widget" class="widget-content">Завантаження...</div>
+            </div>
+            <!-- 2. METALS (Moved to Top) -->
+            <div class="panel-section">
+                <h3 class="section-title">МЕТАЛИ</h3>
+                <div id="metals-widget" class="widget-content">Завантаження...</div>
+            </div>
+            <!-- 3. ANOMALY RADAR -->
+            <div class="panel-section" style="border-color: var(--primary-accent);">
+                <h3 class="section-title" style="color:var(--primary-accent)">ANOMALY RADAR // АНОМАЛІЇ</h3>
+                <div id="anomaly-widget" class="widget-content">Сканування...</div>
+            </div>
+            <!-- 4. RISK CORE -->
+            <div class="panel-section">
+                <h3 class="section-title">ЯДРО РИЗИКУ</h3>
+                <div id="risk-widget" class="widget-content">Завантаження...</div>
+            </div>
+            <!-- 5. LIQUIDITY -->
+            <div class="panel-section">
+                <h3 class="section-title">ЛІКВІДНІСТЬ</h3>
+                <div id="liquidity-widget" class="widget-content">Завантаження...</div>
+            </div>
+            <!-- 6. INFLATION / MATERIALS -->
+            <div class="panel-section">
+                <h3 class="section-title">СИРОВИНА ТА ІНФЛЯЦІЯ</h3>
+                <div id="materials-widget" class="widget-content">Завантаження...</div>
+            </div>
+            <!-- 7. CRYPTO MARKET STATE -->
+            <div class="panel-section">
+                <h3 class="section-title">СТАН РИНКУ</h3>
+                <div id="crypto-state-widget" class="widget-content">Завантаження...</div>
+            </div>
+            <!-- 8. SENTIMENT / НАСТРІЙ -->
+            <div class="panel-section">
+                <h3 class="section-title">СЕНТИМЕНТ (FEAR & GREED)</h3>
+                <div id="sentiment-widget" class="widget-content">Завантаження...</div>
+            </div>
+            <!-- 9. NETWORK HEALTH / МЕРЕЖА -->
+            <div class="panel-section">
+                <h3 class="section-title">МЕРЕЖА (ETH GAS)</h3>
+                <div id="gas-widget" class="widget-content">Завантаження...</div>
+            </div>
+            <!-- 10. DEFI TVL -->
+            <div class="panel-section">
+                <h3 class="section-title">DEFI TVL (TOTAL VALUE)</h3>
+                <div id="tvl-widget" class="widget-content">Завантаження...</div>
+            </div>
+            <!-- 11. NEWS FEED / НОВИНИ -->
+            <div class="panel-section">
+                <h3 class="section-title">OSINT NEWS / ПОДІЇ</h3>
+                <div id="news-widget" class="widget-content" style="font-size:0.8em; line-height:1.2;">Завантаження...
+                </div>
+            </div>
+        </aside>
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- TradingView Widget Container -->
+            <div class="tradingview-widget-container" style="height:100%;width:100%">
+                <div id="tradingview_b82a7" style="height:100%;width:100%"></div>
+            </div>
+        </main>
+        <!-- Bottom Ticker -->
+        <footer class="ticker-bar">
+            <div class="ticker-content" id="crypto-ticker">
+                <!-- API will inject items here -->
+                <span class="ticker-item">ЗАВАНТАЖЕННЯ ДАНИХ СИСТЕМИ...</span>
+            </div>
+        </footer>
+    </div>
+    <!-- Scripts -->
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+    <script src="scripts/api.js"></script>
+    <script src="scripts/components.js"></script>
+    <script src="scripts/app.js"></script>
 </body>
 </html>
