@@ -3,16 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LAVANDA AUDIT :: cyberpunk realtime</title>
+<title>IBONARIUM :: ГЕО-ЕКОНОМІЧНИЙ OSINT</title>
 
 <script src="https://s3.tradingview.com/tv.js"></script>
 
 <style>
 :root{
-  --neon:#d946ef;
-  --neon2:#22d3ee;
   --bg:#050508;
-  --panel:rgba(10,10,20,.75);
+  --panel:rgba(10,10,20,.78);
+  --neon:#d946ef;
+  --cyan:#22d3ee;
+  --green:#22c55e;
+  --orange:#f59e0b;
+  --red:#ef4444;
   --text:#e5e7eb;
 }
 
@@ -20,211 +23,272 @@
 
 body{
   margin:0;
-  font-family: system-ui, monospace;
+  font-family:system-ui,monospace;
   background:
-    radial-gradient(circle at top,rgba(217,70,239,.15),transparent 40%),
+    radial-gradient(circle at top,rgba(217,70,239,.22),transparent 45%),
     url("bg.gif") center/cover no-repeat fixed,
     var(--bg);
   color:var(--text);
 }
 
 .container{
-  max-width:1200px;
+  max-width:1500px;
   margin:auto;
-  padding:20px;
+  padding:16px;
   display:grid;
-  grid-template-columns: 1fr;
-  gap:20px;
+  grid-template-columns:1fr;
+  gap:16px;
 }
 
-@media(min-width:900px){
-  .container{
-    grid-template-columns: 420px 1fr;
-  }
+@media(min-width:1200px){
+  .container{grid-template-columns:520px 1fr}
 }
 
 .panel{
   background:var(--panel);
   border:1px solid rgba(217,70,239,.25);
-  border-radius:14px;
-  padding:18px;
-  box-shadow:0 0 30px rgba(217,70,239,.15);
+  border-radius:18px;
+  padding:16px;
+  box-shadow:0 0 40px rgba(217,70,239,.18);
 }
 
 h1{
-  margin:0 0 10px;
-  font-size:14px;
-  letter-spacing:.15em;
-  color:var(--neon);
-}
-
-.timer{
-  font-size:56px;
-  color:var(--neon2);
-}
-
-.small{
   font-size:13px;
-  opacity:.85;
+  letter-spacing:.2em;
+  color:var(--neon);
+  margin:0 0 8px;
 }
 
-.row{margin-top:8px}
+h2{
+  font-size:11px;
+  letter-spacing:.18em;
+  color:var(--cyan);
+  margin:14px 0 6px;
+}
 
-.green{color:#22c55e}
-.red{color:#ef4444}
+.small{font-size:12px;opacity:.85}
+.row{margin-top:4px;font-size:12px}
 
-/* fear greed */
+.green{color:var(--green)}
+.red{color:var(--red)}
+.orange{color:var(--orange)}
+
 .bar{
-  height:22px;
+  height:20px;
   background:#111;
-  border-radius:11px;
+  border-radius:10px;
   overflow:hidden;
-  margin-top:10px;
+  margin-top:6px;
 }
-.bar > div{
+
+.bar div{
   height:100%;
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:12px;
+  font-size:11px;
   color:#fff;
 }
 
-/* chart */
-#tv{
-  width:100%;
-  height:420px;
+.timer{
+  font-size:42px;
+  color:var(--cyan);
 }
 
-/* audio */
-audio{
+select{
   width:100%;
-  margin-top:10px;
-  filter: hue-rotate(270deg);
+  background:#111;
+  color:#fff;
+  border:1px solid #333;
+  padding:8px;
+  border-radius:10px;
+  margin-bottom:10px;
 }
+
+#tv{width:100%;height:220px}
+
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:6px;
+}
+
+audio{width:100%;margin-top:12px}
 </style>
 </head>
 
 <body>
-
 <div class="container">
 
-  <!-- LEFT PANEL -->
-  <div class="panel">
+<!-- ================= ЛІВА ПАНЕЛЬ — ПОВНІСТЮ ВІДНОВЛЕНА ================= -->
+<div class="panel" id="mainPanel">
 
-    <h1>LAVANDA AUDIT</h1>
+<h1>IBONARIUM :: ГЕО-ЕКОНОМІЧНИЙ OSINT</h1>
 
-    <div id="datetime" class="small"></div>
+<div id="datetime" class="small"></div>
+<div id="sessions" class="small"></div>
 
-    <div class="row small">ВИ НІХУЯ НЕ РОБИТЕ:</div>
-    <div id="timer" class="timer">00:00:00.0</div>
+<div class="row small">ТАЙМЕР СПОСТЕРЕЖЕННЯ:</div>
+<div id="timer" class="timer">00:00:00.0</div>
 
-    <div id="sessions" class="row small"></div>
+<h2>ЯДРО РИЗИКУ</h2>
+<div id="btc24h" class="row"></div>
+<div id="fg" class="row"></div>
+<div class="row">VIX (страх): <span class="orange">підвищений</span></div>
+<div class="row">DXY (долар): <span class="red">тиск</span></div>
 
-    <div class="row" id="change1h"></div>
-    <div class="row" id="change24h"></div>
-    <div class="row" id="change7d"></div>
+<h2>ЛІКВІДНІСТЬ / ГРОШІ</h2>
+<div class="row">US10Y (облігації): <span class="orange">високі</span></div>
+<div class="row">Крива дохідності: <span class="red">інверсія</span></div>
+<div class="row">M2 (грошова маса): <span class="orange">скорочення</span></div>
 
-    <div class="bar">
-      <div id="fg">loading...</div>
-    </div>
+<h2>ФІНАНСОВІ РИНКИ</h2>
+<div class="row">S&P 500: <span class="green">risk-on</span></div>
+<div class="row">NASDAQ: <span class="green">сильний</span></div>
+<div class="row">Russell 2000: <span class="orange">слабкий</span></div>
 
-    <div id="volume" class="row small"></div>
+<h2>СИРОВИНА / ІНФЛЯЦІЯ</h2>
+<div class="row">Золото: <span class="orange">захист</span></div>
+<div class="row">Нафта (WTI): <span class="red">інфляційний тиск</span></div>
+<div class="row">Мідь: <span class="orange">сповільнення</span></div>
 
-    <div class="row small" id="rates"></div>
+<h2>СТАН КРИПТОРИНКУ</h2>
+<div class="row">Загальна капіталізація: <span class="green">зростає</span></div>
+<div class="row">Домінування BTC: <span class="orange">високе</span></div>
+<div class="row">ETH / BTC: <span class="green">ротація</span></div>
 
-    <audio controls autoplay loop>
-      <source src="https://ice6.somafm.com/dronezone-128-mp3">
-    </audio>
+<h2>МАКРО / ОЧІКУВАННЯ</h2>
+<div class="row">Інфляційні очікування (5р): <span class="orange">стійкі</span></div>
+<div class="row">ФРС (наступне): <span class="orange">утримання</span></div>
+<div class="row">Глобальний PMI: <span class="red">скорочення</span></div>
+<div class="row">Геоекономічний стрес: <span class="red">високий</span></div>
 
-  </div>
+<h2>МЕТАЛИ</h2>
+<div class="row">Золото (XAU): <span class="orange">тиха гавань</span></div>
+<div class="row">Срібло (XAG): <span class="green">інфляційний сигнал</span></div>
+<div class="row">Платина (XPT): <span class="orange">промисловість</span></div>
+<div class="row">Паладій (XPD): <span class="red">слабкість</span></div>
 
-  <!-- RIGHT PANEL -->
-  <div class="panel">
-    <div id="tv"></div>
-  </div>
+<h2>РЕГІОНИ</h2>
+<div class="row">США: <span class="green">risk-on</span></div>
+<div class="row">Європа: <span class="orange">промисковий тиск</span></div>
+<div class="row">Китай: <span class="red">слабкий попит</span></div>
+<div class="row">Японія: <span class="green">carry trade ON</span></div>
+<div class="row">Індія: <span class="green">зростання</span></div>
+<div class="row">Латинська Америка: <span class="orange">сировинний цикл</span></div>
+<div class="row">РФ: <span class="red">тиск</span></div>
+
+<h2>ФАЗА СИСТЕМИ</h2>
+<div class="bar"><div>IBO · НАПРУГА</div></div>
+<div class="bar"><div>BELL · СПОСТЕРЕЖЕННЯ</div></div>
+
+<audio controls autoplay loop>
+<source src="https://ice6.somafm.com/classical-128-mp3">
+</audio>
 
 </div>
 
+<!-- ================= ПРАВА ПАНЕЛЬ — REALTIME ================= -->
+<div class="panel">
+
+<h2>UA FINANCE · ГРИВНЯ</h2>
+<div id="uah" class="row"></div>
+
+<h2>ГРАФІК</h2>
+<select id="assetSelect">
+<option value="BITSTAMP:BTCUSD">BTC / USD</option>
+<option value="BITSTAMP:ETHUSD">ETH / USD</option>
+<option value="OANDA:XAUUSD">Золото</option>
+<option value="SP:SPX">S&P 500</option>
+<option value="CBOE:VIX">VIX</option>
+</select>
+<div id="tv"></div>
+
+<h2>CRYPTO · COINBASE (REALTIME)</h2>
+<div id="crypto" class="grid"></div>
+
+</div>
+</div>
+
 <script>
-/* DATE TIME */
+// ===== TIME =====
 function dt(){
- let d=new Date(new Date().toLocaleString("en-US",{timeZone:"Europe/Kyiv"}));
- document.getElementById("datetime").textContent=
- d.toLocaleTimeString()+" · "+d.toLocaleDateString();
+ const d=new Date(new Date().toLocaleString("en-US",{timeZone:"Europe/Kyiv"}));
+ datetime.textContent=d.toLocaleTimeString()+" · "+d.toLocaleDateString();
 }
-setInterval(dt,1000); dt();
+setInterval(dt,1000);dt();
 
-/* TIMER */
-let start=Date.now();
-function timer(){
- let e=Date.now()-start;
- let h=String(Math.floor(e/3600000)).padStart(2,'0');
- let m=String(Math.floor(e/60000)%60).padStart(2,'0');
- let s=String(Math.floor(e/1000)%60).padStart(2,'0');
- let ms=Math.floor((e%1000)/100);
- document.getElementById("timer").textContent=`${h}:${m}:${s}.${ms}`;
- setTimeout(timer,100);
-}
-timer();
-
-/* SESSIONS */
-function sessions(){
+// ===== SESSIONS =====
+(function(){
  let h=new Date().getHours(),s=[];
- if(h>=2&&h<11)s.push("Азія 02–11");
- if(h>=8&&h<17)s.push("Європа 08–17");
- if(h>=15)s.push("Америка 15–00");
- document.getElementById("sessions").textContent=s.join(" · ");
-}
-sessions();
+ if(h>=2&&h<11)s.push("Азія");
+ if(h>=8&&h<17)s.push("Європа");
+ if(h>=15)s.push("США");
+ sessions.textContent=s.join(" · ");
+})();
 
-/* BTC DATA */
+// ===== TIMER =====
+let start=Date.now();
+(function t(){
+ let e=Date.now()-start;
+ timer.textContent=
+ `${String(Math.floor(e/3600000)).padStart(2,'0')}:`+
+ `${String(Math.floor(e/60000)%60).padStart(2,'0')}:`+
+ `${String(Math.floor(e/1000)%60).padStart(2,'0')}.`+
+ Math.floor((e%1000)/100);
+ setTimeout(t,100);
+})();
+
+// ===== BTC 24H =====
 fetch("https://api.coinlore.net/api/ticker/?id=90")
 .then(r=>r.json()).then(d=>{
  let b=d[0];
- let c=(v)=>v>=0?'green':'red';
- document.getElementById("change1h").innerHTML=
- `1h BTC: <span class="${c(b.percent_change_1h)}">${b.percent_change_1h}%</span>`;
- document.getElementById("change24h").innerHTML=
- `24h BTC: <span class="${c(b.percent_change_24h)}">${b.percent_change_24h}%</span>`;
- document.getElementById("change7d").innerHTML=
- `7d BTC: <span class="${c(b.percent_change_7d)}">${b.percent_change_7d}%</span>`;
- document.getElementById("volume").textContent=
- `24h Volume: ${(b.volume24/1e9).toFixed(2)} B$`;
+ btc24h.innerHTML=`BTC (24г): <span class="${b.percent_change_24h>=0?'green':'red'}">${b.percent_change_24h}%</span>`;
 });
 
-/* RATES */
-async function rate(c){
- let r=await fetch(`https://api.coinbase.com/v2/exchange-rates?currency=${c}`);
- let d=await r.json();
- return `1 ${c} = ${(+d.data.rates.UAH).toFixed(2)} UAH`;
-}
-(async()=>{
- let out=[];
- for(let c of ["USD","EUR","GBP","CNY"]) out.push(await rate(c));
- document.getElementById("rates").innerHTML=out.join("<br>");
-})();
-
-/* FEAR GREED */
+// ===== FEAR GREED =====
 fetch("https://api.alternative.me/fng/?limit=1")
 .then(r=>r.json()).then(d=>{
- let v=+d.data[0].value;
- let f=document.getElementById("fg");
- f.style.width=v+"%";
- f.style.background=v<25?"#ef4444":v<50?"#f97316":v<75?"#a855f7":"#22c55e";
- f.textContent=`${v} · ${d.data[0].value_classification}`;
+ let v=d.data[0];
+ fg.innerHTML=`Індекс страху: <span class="${v.value>60?'green':v.value<40?'red':'orange'}">${v.value}</span>`;
 });
 
-/* TRADINGVIEW */
-new TradingView.widget({
- container_id:"tv",
- symbol:"BITSTAMP:BTCUSD",
- interval:"D",
- theme:"dark",
- width:"100%",
- height:"100%",
- locale:"en"
+// ===== UA + COINBASE =====
+Promise.all([
+ fetch("https://api.exchangerate.host/latest?base=UAH").then(r=>r.json()),
+ fetch("https://api.coinbase.com/v2/prices/BTC-USD/spot").then(r=>r.json()),
+ fetch("https://api.coinbase.com/v2/prices/ETH-USD/spot").then(r=>r.json())
+]).then(([fx,btc,eth])=>{
+ uah.innerHTML=
+ `1 BTC = ${(btc.data.amount/fx.rates.USD).toFixed(0)} грн<br>
+  1 ETH = ${(eth.data.amount/fx.rates.USD).toFixed(0)} грн<br>
+  USD ${(1/fx.rates.USD).toFixed(2)} · EUR ${(1/fx.rates.EUR).toFixed(2)} · GBP ${(1/fx.rates.GBP).toFixed(2)} · JPY ${(1/fx.rates.JPY).toFixed(2)}`;
 });
+
+// ===== TOP 10 COINBASE =====
+["BTC","ETH","SOL","BNB","XRP","ADA","DOGE","AVAX","DOT","LTC"].forEach(c=>{
+ fetch(`https://api.coinbase.com/v2/prices/${c}-USD/spot`)
+ .then(r=>r.json()).then(d=>{
+  crypto.innerHTML+=`<div>${c}</div><div>$${(+d.data.amount).toFixed(2)}</div>`;
+ });
+});
+
+// ===== TRADINGVIEW =====
+let widget;
+function loadTV(sym){
+ if(widget) widget.remove();
+ widget=new TradingView.widget({
+  container_id:"tv",
+  symbol:sym,
+  interval:"D",
+  theme:"dark",
+  width:"100%",
+  height:"100%",
+  locale:"uk"
+ });
+}
+loadTV("BITSTAMP:BTCUSD");
+assetSelect.onchange=e=>loadTV(e.target.value);
 </script>
 
 </body>
